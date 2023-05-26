@@ -1,36 +1,6 @@
-<script setup lang="ts">
-import Preview from './Preview.vue'
-import CodeMirror from '../codemirror/CodeMirror.vue'
-import { Store } from '../store'
-import { inject, ref, computed } from 'vue'
-import type { OutputModes } from './types'
-
-const props = defineProps<{
-  showCompileOutput?: boolean
-  ssr: boolean
-}>()
-
-const store = inject('store') as Store
-const modes = computed(() =>
-  props.showCompileOutput
-    ? (['preview', 'js', 'css', 'ssr'] as const)
-    : (['preview'] as const)
-)
-
-const mode = ref<OutputModes>(
-  (modes.value as readonly string[]).includes(store.initialOutputMode)
-    ? store.initialOutputMode as OutputModes
-    : 'preview'
-)
-</script>
-
 <template>
   <div class="tab-buttons">
-    <button
-      v-for="m of modes"
-      :class="{ active: mode === m }"
-      @click="mode = m"
-    >
+    <button v-for="m of modes" :class="{active: mode === m}" @click="mode = m">
       <span>{{ m }}</span>
     </button>
   </div>
@@ -45,6 +15,32 @@ const mode = ref<OutputModes>(
     />
   </div>
 </template>
+
+<script setup lang="ts">
+import Preview from "./Preview.vue";
+import CodeMirror from "../codemirror/CodeMirror.vue";
+import {Store} from "../store";
+import {inject, ref, computed} from "vue";
+import type {OutputModes} from "./types";
+
+const props = defineProps<{
+  showCompileOutput?: boolean;
+  ssr: boolean;
+}>();
+
+const store = inject("store") as Store;
+const modes = computed(() =>
+  props.showCompileOutput
+    ? (["preview", "js", "css", "ssr"] as const)
+    : (["preview"] as const)
+);
+
+const mode = ref<OutputModes>(
+  (modes.value as readonly string[]).includes(store.initialOutputMode)
+    ? (store.initialOutputMode as OutputModes)
+    : "preview"
+);
+</script>
 
 <style scoped>
 .output-container {

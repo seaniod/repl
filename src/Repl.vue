@@ -1,55 +1,3 @@
-<script setup lang="ts">
-import SplitPane from './SplitPane.vue'
-import Editor from './editor/Editor.vue'
-import Output from './output/Output.vue'
-import { Store, ReplStore, SFCOptions } from './store'
-import { provide, toRef } from 'vue'
-
-export interface Props {
-  store?: Store
-  autoResize?: boolean
-  showCompileOutput?: boolean
-  showImportMap?: boolean
-  clearConsole?: boolean
-  sfcOptions?: SFCOptions
-  layout?: string
-  ssr?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  store: () => new ReplStore(),
-  autoResize: true,
-  showCompileOutput: true,
-  showImportMap: true,
-  clearConsole: true,
-  ssr: false
-})
-
-const { store } = props
-const sfcOptions = (store.options = props.sfcOptions || {})
-if (!sfcOptions.script) {
-  sfcOptions.script = {}
-}
-// @ts-ignore only needed in 3.3
-sfcOptions.script.fs = {
-  fileExists(file: string) {
-    if (file.startsWith('/')) file = file.slice(1)
-    return !!store.state.files[file]
-  },
-  readFile(file: string) {
-    if (file.startsWith('/')) file = file.slice(1)
-    return store.state.files[file].code
-  }
-}
-
-store.init()
-
-provide('store', store)
-provide('autoresize', props.autoResize)
-provide('import-map', toRef(props, 'showImportMap'))
-provide('clear-console', toRef(props, 'clearConsole'))
-</script>
-
 <template>
   <div class="vue-repl">
     <SplitPane :layout="layout">
@@ -66,20 +14,72 @@ provide('clear-console', toRef(props, 'clearConsole'))
   </div>
 </template>
 
+<script setup lang="ts">
+import SplitPane from "./SplitPane.vue";
+import Editor from "./editor/Editor.vue";
+import Output from "./output/Output.vue";
+import {Store, ReplStore, SFCOptions} from "./store";
+import {provide, toRef} from "vue";
+
+export interface Props {
+  store?: Store;
+  autoResize?: boolean;
+  showCompileOutput?: boolean;
+  showImportMap?: boolean;
+  clearConsole?: boolean;
+  sfcOptions?: SFCOptions;
+  layout?: string;
+  ssr?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  store: () => new ReplStore(),
+  autoResize: true,
+  showCompileOutput: true,
+  showImportMap: true,
+  clearConsole: true,
+  ssr: false,
+});
+
+const {store} = props;
+const sfcOptions = (store.options = props.sfcOptions || {});
+if (!sfcOptions.script) {
+  sfcOptions.script = {};
+}
+// @ts-ignore only needed in 3.3
+sfcOptions.script.fs = {
+  fileExists(file: string) {
+    if (file.startsWith("/")) file = file.slice(1);
+    return !!store.state.files[file];
+  },
+  readFile(file: string) {
+    if (file.startsWith("/")) file = file.slice(1);
+    return store.state.files[file].code;
+  },
+};
+
+store.init();
+
+provide("store", store);
+provide("autoresize", props.autoResize);
+provide("import-map", toRef(props, "showImportMap"));
+provide("clear-console", toRef(props, "clearConsole"));
+</script>
+
 <style scoped>
 .vue-repl {
   --bg: #fff;
   --bg-soft: #f8f8f8;
   --border: #ddd;
   --text-light: #888;
-  --font-code: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  --font-code: Menlo, Monaco, Consolas, "Courier New", monospace;
   --color-branding: #42b883;
   --color-branding-dark: #416f9c;
   --header-height: 38px;
 
   font-size: 13px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   overflow: hidden;
   background-color: var(--bg-soft);
